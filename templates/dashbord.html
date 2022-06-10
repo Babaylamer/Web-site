@@ -1,0 +1,341 @@
+{% extends "layout.html" %}
+{% block head %}
+
+<title>Kontrol Paneli</title>
+<style>
+#myProgress {
+  width: 70%;
+  background-color: #ddd;
+}
+
+#myBar {
+  width: {{point}}%;
+  height: 30px;
+  background-color: #04AA6D;
+  text-align: center;
+  line-height: 30px;
+  color: white;
+}
+#pp:hover{
+  background-color:#708090;    
+}
+label{ margin-right: 15px; }
+#foto{
+  background-color: indigo;
+  color: white;
+  padding: 0.5rem;
+  font-family: sans-serif;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+
+</style>
+{% endblock head %}
+{% block body %}
+
+{% if session["role"] == "admin" %}
+<h3>Admin Kontrol Paneli</h3>
+<form method="post" enctype="multipart/form-data">
+  {% if image %}
+  <img src="data:image/png;base64, {{image}}" style="width:110px; border:1px white; border-radius:80%;">
+  <input required name="image" type="file" id="upload" hidden/><br>
+  <label id="foto" for="upload">Foto seç</label><br>
+  <button type="submit" class="btn btn-primary">Değiştir</button>
+  {% else %}
+  <img id="pp" style="width: 100px;border: 5px black;" src="static/pics/noneFoto.png">
+  <input required name="image" type="file" id="upload" hidden/><br>
+  <label id="foto" for="upload">Foto seç</label><br>
+  <button type="submit" class="btn btn-primary">Kaydet</button>
+  {% endif %}
+</form>
+<h5>Hoşgeldiniz {{session["user_name"]}}</h5>
+<hr>
+  <h4>Hakkımda:</h4>
+  <textArea name="about" class="form-control" style="height: 120px;max-height: 120px;min-height: 120px;border-style: inset;border-width: 2px;">{{session["about"]}}</textArea>
+  <div style="float: right;">
+  <form action="/addabout">
+  <button type="submit" class="btn btn-danger">Kaydet</button>
+  <button id="triggerBan" type="button" class="btn btn-danger" data-toggle="modal" data-target="#Anonct">Duyuru Yap</button>
+  </div>
+  </form>
+{% if users %}
+<h5>Kullanıcılar:</h5>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col"></th>
+      <th scope="col">Kullanıcı Adı</th>
+      <th scope="col">isim</th>
+      <th scope="col">email</th>
+      <th scope="col">Puan</th>
+      <th scope="col">Rol</th>
+      <th scope="col"></th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+        {% for user in users %}
+        <tr>
+            <th scope="row"><img src="data:image/png;base64, {{user.pp}}" style="width:50px; border:1px white; border-radius:80%;"></th>
+            <td><a href="/user/{{user.username}}">{{user.username}}</td>
+            <td>{{user.name}}</td>
+            <td>{{user.email}}</td>
+            <td>{{user.Point}}</td>
+            <td>{{user.role}}</td>
+            {% if user.role != "admin" %}
+            <td><button id="triggerWarn" type="button" class="btn btn-danger" data-toggle="modal" data-target="#Warn{{user.username}}">Uyar</button></td>
+            <td><button id="triggerBan" type="button" class="btn btn-danger" data-toggle="modal" data-target="#Ban{{user.username}}">Yasakla</button></td>
+            {% else %}
+            <td style="color: white;">ads</td>
+            <td style="color: white;">dsa</td>
+            {% endif %}
+    <div class="modal fade" id="Warn{{user.username}}" role="dialog">
+    <div class="modal-dialog">
+   
+      <!-- Modal Warn content-->
+      <div class="modal-content">
+        <div class="modal-header">
+        <h4 class="modal-title">Uyar</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <form action="/warn/{{user.username}}">
+        <div class="modal-body">
+          <h4>Uyarı:</h4>
+          <textArea name="reason" style="border-style: inset;border-width: 2px; width: 450px; height: 80px; max-height: 80px; max-width: 450px; min-height: 80px;" required class="form-control"></textArea>
+        </div>
+        <div class="modal-footer">
+         <button type="submit" class="btn btn-default">Uyar!</button>
+        </form>
+         <button type="button" class="btn btn-default" data-dismiss="modal">Vazgeç</button>
+        </div>
+      </div>
+     </div>
+      </div>
+    <div class="modal fade" id="Ban{{user.username}}" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal Ban content-->
+      <div class="modal-content">
+        <div class="modal-header">
+        <h4 class="modal-title">Yasakla</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <form action="/ban/{{user.username}}">
+        <div class="modal-body">
+          <h4>Sebep:</h4>
+          <textArea name="attachment" style="border-style: inset;border-width: 2px; width: 450px; height: 80px; max-height: 80px; max-width: 450px; min-height: 80px;" required class="form-control"></textArea>
+          <h4>Son Gün:</h4>
+          <input id="inf" type="checkbox" name="inf" onclick="func()" value="True">
+          <label for="inf">Sınırsız</label><br>
+          <input id="ld" name="lastDay" type="date">
+        </div>
+        <div class="modal-footer">
+         <button type="submit" class="btn btn-danger">Yasakla</button>
+        </form>
+         <button type="button" class="btn btn-default" data-dismiss="modal">Vazgeç</button>
+        </div>
+      </div>
+     </div>
+      </div>
+   
+        </tr>
+        {% endfor %}
+  </tbody>
+</table>
+<div class="modal fade" id="Anonct" role="dialog">
+    <div class="modal-dialog">
+   
+      <!-- Modal Anonct content-->
+      <div class="modal-content">
+        <div class="modal-header">
+        <h4 class="modal-title">Duyuru Yap</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <form action="/makeAnonct">
+        <div class="modal-body">
+          <h4>Duyuru:</h4>
+          <textArea id="anonct" name="anonct" style="border-style: inset;border-width: 2px; width: 450px; height: 80px; max-height: 80px; max-width: 450px; min-height: 80px;" required class="form-control"></textArea>
+        </div>
+        <div class="modal-footer">
+         <button type="submit" class="btn btn-default">Yap!</button>
+        </form>
+         <button type="button" class="btn btn-default" data-dismiss="modal">Vazgeç</button>
+        </div>
+      </div>
+     </div>
+      </div>
+{% else %}
+<div class="alert alert-danger">Herhangi bir kullanıcı bulunamadı</div>
+{% endif %}
+<h5>Şikayetler:</h5>
+{% if reports %}
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">id</th>
+      <th scope="col">Gönderen</th>
+      <th scope="col">Şikayet Edilen</th>
+      <th scope="col">Şikayet Günü</th>
+      <th scope="col">Şikayet Türü</th>
+      <th scope="col">Sebep</th>
+      <th scope="col">Açıklama</th>
+      <th scope="col"></th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+        {% for report in reports %}
+        <tr>
+            <th scope="row">{{report.id}}</th>
+            <td><a href="/user/{{report.sender}}">{{report.sender}}</a></td>
+            <td>{{report.reported}}</td>
+            <td>{{report.reported_date}}</td>
+            <td>{{report.reportType}}</td>
+            <td>{{report.reason}}</td>
+            <td>{{report.attachment}}</td>
+            <td><a href="/SendRereport{{report.id}}" class="btn btn-danger">Olumlu Geri Dön</a></td>   
+            <td><a href="/deletereport{{report.id}}" class="btn btn-danger">Sil</a></td>  
+        </tr>
+        {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="alert alert-danger">Herhangi bir şikayet bulunamadı</div>
+{% endif %}
+{% if warnban %}
+<h5>Uyarılar-Yasaklamalar:</h5>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">id</th>
+      <th scope="col">Admin</th>
+      <th scope="col">Alıcı</th>
+      <th scope="col">Tür</th>
+      <th scope="col">Sebep</th>
+      <th scope="col">Gönderilme Günü</th>
+      <th scope="col">Ban-Son-Gün</th>
+      <th scope="col">Uyarı-Görüldü</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+        {% for warnba in warnban %}
+        <tr>
+            <th scope="row">{{warnba.id}}</th>
+            <td><a href="/user/{{warnba.admin}}">{{warnba.admin}}</a></td>
+            <td><a href="/user/{{warnba.receiver}}">{{warnba.receiver}}</a></td>
+            <td>{{warnba.Type}}</td>
+            <td>{{warnba.reason}}</td>
+            <td>{{warnba.throw_date}}</td>
+            <td>{{warnba.BanLastDay}}</td>
+            <td>{{warnba.warnState}}</td>
+            {% if warnba.Type == "Ban" %}
+            <td><a href="/deleteBan{{warnba.id}}" class="btn btn-danger">Kaldır</a></td>
+            {% else %}
+            <td><a href="/deleteWarn{{warnba.id}}" class="btn btn-danger">Sil</a></td>
+            {% endif %}   
+        </tr>
+        {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="alert alert-danger">Herhangi bir Uyarı veya Yasaklama bulunamadı</div>
+{% endif %}
+<h5>Duyurular:</h5>
+{% if anoncts %}
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">id</th>
+      <th scope="col">içerik</th>
+      <th scope="col"></th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+        {% for anonct in anoncts %}
+        <tr>
+            <th scope="row">{{anonct.id}}</th>
+            <td>{{anonct.content|safe}}</td>
+            <td></td>
+            <form action="/deleteAnonct{{anonct.id}}">
+            <td><button class="btn btn-danger">Kaldır</button></td>
+            </form>
+        </tr>
+        {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="alert alert-danger">Herhangi bir Duyuru yok</div>
+{% endif %}
+{% else %}
+<h3>Kontrol Paneli</h3>
+<form method="post" enctype="multipart/form-data">
+  {% if image %}
+  <img src="data:image/png;base64, {{image}}" style="width:100px; border:1px white; border-radius:80%;">
+  <input required name="image" type="file" id="upload" hidden/><br>
+  <label id="foto" for="upload">Foto seç</label><br>
+  <button type="submit" class="btn btn-primary">Değiştir</button>
+  {% else %}
+  <img id="pp" style="width: 100px;border: 5px black;" src="static/pics/noneFoto.png">
+  <input required name="image" type="file" id="upload" hidden/><br>
+  <label id="foto" for="upload">Foto seç</label><br>
+  <button type="submit" class="btn btn-primary">Kaydet</button>
+  {% endif %}
+</form>
+Hoşgeldiniz {{session["user_name"]}}
+{% if session.role == "Yazar" %}
+{{conc|safe}}
+<!--Space-->
+
+{% else %}
+<h4>Puan:</h4>
+<div id="myProgress">
+  <div id="myBar">%{{point}}</div>
+</div>
+{{conc|safe}}
+<hr>
+{% endif %}
+<form action="/addabout">
+<h4>Hakkımda:</h4>
+<textArea name="about" class="form-control" style="height: 120px;max-height: 120px;min-height: 120px;border-style: inset;border-width: 2px;">{{session["about"]}}</textArea>
+<div style="float: right;">
+<button type="submit" class="btn btn-danger">Kaydet</button>
+</div>
+</form>
+<br><br>
+<hr>
+<a class="btn btn-danger" href="/addarticle">Makale Ekle</a>
+<br>
+{% if articles %}
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">Başlık</th>
+      <th scope="col">Yazar</th>
+      <th scope="col">Tarih</th>
+      <th scope="col">Puan Ortalaması</th>
+      <th scope="col"></th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for article in articles %}
+        <tr>
+            <th scope="row"><a href="/article{{article.id}}">{{article.title}}</a></th>
+            <td>{{article.author}}</td>
+            <td>{{article.created_date}}</td>
+            <td>{{article.rateAverage}}</td>
+            <td><a href="/edit/{{article.id}}" class="btn btn-danger">Düzenle</a></td>
+            <td><a href="/delete/{{article.id}}" class="btn btn-danger">Sil</a></td>
+        </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="alert alert-danger">Henüz Makaleniz Bulunmuyor</div>
+{%endif%}
+{%endif%}
+
+{% endblock body %}

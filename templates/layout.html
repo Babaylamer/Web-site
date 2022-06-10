@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="shortcut icon" href="static/pics/favicon.ico" type="image/x-icon">  
+    {% block head %}
+    <title>cBlog</title>
+    {% endblock head %}
+</head>
+<body>
+{% include "./includes/navbar.html" %}
+<br>
+<br>
+<br>
+<div class="container">
+{% include "./includes/messages.html" %}
+{% block body %}
+
+{% endblock body %}
+</div>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<script>
+	$(document).ready(function(){
+		$("#Warns").modal('show');
+	});
+</script>
+<script>
+	$(document).ready(function(){
+		$("#Ban").modal('show');
+	});
+</script>
+<script>
+	$(document).ready(function(){
+		$("#News").modal('show');
+	});
+</script>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script src="https://cdn.ckeditor.com/4.17.1/standard/ckeditor.js"></script>
+<script>
+    function func(){
+        var val = document.getElementById("inf");
+        var date = document.getElementById("ld")
+        if(val.checked==false){
+            date.style.display="block";
+        }
+        else{
+            date.style.display="none"
+
+        }
+    }
+
+</script>
+
+<script>
+                        CKEDITOR.replace( 'content' );
+                </script>
+<script>
+                        CKEDITOR.replace( 'anonct' );
+                </script>
+<script src="https://kit.fontawesome.com/f6dcf461c1.js" crossorigin="anonymous"></script>
+</body>
+</html>

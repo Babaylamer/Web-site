@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+{% block head %}
+<title>cBlog</title>
+<style>
+#div1:hover{
+background-color:background-color#D3D3D3;
+
+}
+
+</style>
+{% endblock head %}
+{% block body %}
+<h3>Ana Sayfa</h3>
+{% if session["logged_in"] and rereports or warns or Ban or news %}
+{% if Ban %}
+<div class="modal fade" id="Ban" role="dialog">
+    <div class="modal-dialog">
+   
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+        <h4 class="modal-title">Yasaklandınız</h4>
+
+        </div>
+        <div class="modal-body">
+          <h5>Admin: {{Ban.admin}}<br> SonGün: {{Ban.BanLastDay}}</h5>
+          <h6>{{Ban.reason}}</h6>
+          <hr>
+        </div>
+        <div class="modal-footer">
+        <form action="/logout">
+         <button type="submit" class="btn btn-primary">Okudum Anladım</button>
+        </form>
+        </div>
+      </div>
+     </div>
+      </div>
+{% else %}
+
+<div class="modal fade" id="News" role="dialog">
+    <div class="modal-dialog">
+   
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+        <h4 class="modal-title">Haberler</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+{% if news %}
+{% for new in news %}
+{% for n in new %}
+<h6>{{n.content|safe}}</h6>
+{% endfor %}
+{% endfor %}
+{% else %}
+{% endif %}
+<h4>Uyarılar:</h4>
+{% if warns %}
+{% for warn in warns %}
+<h5>{{warn.admin}} {{warn.throw_date}}</h5><h6>{{warn.reason}}</h6>
+{% endfor %}
+Geri Raporlar:<br>
+{% if rereports %}
+{% for rereport in rereports %}
+<h5>Admin:{{rereport.admin}}</h5>
+{{rereport.content}}
+{% endfor %}
+{% else %}
+<div class="alert alert-warning">Herhangi bir geri rapor yok</div><br>
+{% endif %}
+{% else %}
+<div class="alert alert-warning">Herhangi bir Uyarı yok</div>
+<h4>Geri Raporlar:</h4>
+{% if rereports %}
+{% for rereport in rereports %}
+<h5>Admin:{{rereport.admin}}</h5>
+<h6>{{rereport.content}}</h6>
+{% else %}
+<div class="alert alert-warning">Herhangi bir geri rapor yok</div>
+{% endfor %}
+{% endif %}        
+        </div>
+        <div class="modal-footer">
+        <form method="POST">
+         <button type="submit" class="btn btn-primary">Okudum</button>
+        </form>
+        </div>
+      </div>
+     </div>
+      </div>
+{% endif %}
+{% endif %}
+{% endif %}
+<div class="jumbotron text-center">
+    <h3>cBloga hoş geldiniz</h3>
+    <p>Bu blogta geliştiriciler olarak blog yazılıranızı paylaşabilirsiniz ve insanlara yardımcı olabilirsiniz</p>
+    {% if session.logged_in %}
+    
+    {% else %}
+    
+    <form action="/register">
+    <button class="btn btn-success">Yazmaya Başla</button>
+    </form>
+{% endif %}
+</div>
+{% endblock body %}

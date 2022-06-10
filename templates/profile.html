@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+{% block head %}
+<style>
+#myProgress {
+  width: 70%;
+  background-color: #ddd;
+}
+
+#myBar {
+  width: {{point}}%;
+  height: 30px;
+  background-color: #04AA6D;
+  text-align: center;
+  line-height: 30px;
+  color: white;
+}
+</style>
+{% endblock head %}
+{% block body %}
+{% if user %}
+<br>
+<img src="data:image/png;base64, {{user.pp}}" style="width:90px; border:1px white; border-radius:80%;">
+<h2>{{user.username}}</h2>
+{% if user.role =="admin" %}
+{{user.role|safe}}
+<h4>Hakkında:</h4>
+<textArea disabled class="form-control" style="height: 120px;max-height: 120px;min-height: 120px;border:black;border-style: inset;border-width: 4px;">{{about}}</textArea>
+{% else %}
+<h4>Puan:</h4>
+<div id="myProgress">
+  <div id="myBar">%{{point}}</div>
+</div>
+{{conc|safe}}<h5>
+<h4>Hakkında:</h4>
+<textArea disabled class="form-control" style="height: 120px;max-height: 120px;min-height: 120px;border:black;border-style: inset;border-width: 4px;">{{about}}</textArea>
+<br><h4>Makaleler:</h4>
+{% if articles %}
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">Başlık</th>
+      <th scope="col">Yazar</th>
+      <th scope="col">Tarih</th>
+      <th scope="col">Puan Ortalaması</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for article in articles %}
+        <tr>
+            <th scope="row"><a href="/article{{article.id}}">{{article.title}}</a></th>
+            <td>{{article.author}}</td>
+            <td>{{article.created_date}}</td>
+            <td>{{article.rateAverage}}</td>
+        </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{%else%}
+<div class="alert alert-danger">Bu kullanıcının Herhangi bir makalesi bulunmuyor</div>
+{% endif %}
+{% endif %}
+{% else %}
+<div class="alert alert-danger">Böyle Bir kullanıcı Bulunamadı</div>
+{% endif %}
+{% endblock body %}
